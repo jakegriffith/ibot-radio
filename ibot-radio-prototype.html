@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iBot Radio - Music for Every Unit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* Glitch animation for robot elements */
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(-1px, -1px); }
+            60% { transform: translate(1px, 1px); }
+            80% { transform: translate(1px, -1px); }
+        }
+
+        @keyframes dataStream {
+            0% { transform: translateX(100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(-100%); opacity: 0; }
+        }
+
+        /* iHeart Radio style header with gradient */
+        .header {
+            background: linear-gradient(90deg, #e60023 0%, #ff4757 50%, #e60023 100%);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(230, 0, 35, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "01001001 01000010 01001111 01010100";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            opacity: 0.1;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            animation: dataStream 15s linear infinite;
+            color: #000;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .robot-logo {
+            width: 45px;
+            height: 45px;
+            background: #ffffff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .robot-logo::before {
+            content: "◉ ◉";
+            position: absolute;
+            top: 10px;
+            font-size: 12px;
+            letter-spacing: 6px;
+            color: #e60023;
+        }
+
+        .robot-logo::after {
+            content: "▬";
+            position: absolute;
+            bottom: 10px;
+            font-size: 16px;
+            color: #e60023;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .tagline {
+            font-size: 13px;
+            color: rgba(255,255,255,0.9);
+            margin-top: 2px;
+            font-weight: 300;
+        }
+
+        /* iHeart style navigation */
+        .nav {
+            background: #ffffff;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            padding: 0 20px;
+        }
+
+        .nav-item {
+            color: #333;
+            text-decoration: none;
+            padding: 15px 20px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #e60023;
+            border-bottom-color: #e60023;
+            background: rgba(230, 0, 35, 0.05);
+        }
+
+        /* Main container with iHeart card layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 30px;
+        }
+
+        /* Station header with iHeart styling */
+        .station-header {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .station-logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #e60023, #ff4757);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(230, 0, 35, 0.3);
+            animation: glitch 15s infinite;
+        }
+
+        .station-info h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .listener-count {
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .listener-count::before {
+            content: "●";
+            color: #00ff41;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        /* iHeart style player card */
+        .player {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #e60023, #ff4757, #e60023);
+        }
+
+        .now-playing {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .song-title {
+            font-size: 22px;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .artist-name {
+            color: #666;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            margin: 25px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #e60023, #ff4757);
+            border-radius: 3px;
+            animation: progress 180s linear infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 45px;
+            height: 45px;
+            background: #f8f8f8;
+            border: 2px solid #e0e0e0;
+            border-radius: 50%;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: #e60023;
+            border-color: #e60023;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .play-btn {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #e60023, #ff4757);
+            border: none;
+            color: #fff;
+            font-size: 20px;
+        }
+
+        .play-btn:hover {
+            background: linear-gradient(135deg, #d50020, #ff3742);
+            transform: scale(1.1);
+        }
+
+        /* Playlist with iHeart styling */
+        .playlist {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .playlist h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .playlist h3::before {
+            content: "▶";
+            color: #e60023;
+            font-size: 16px;
+        }
+
+        .track {
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 8px;
+            border: 1px solid transparent;
+        }
+
+        .track:hover {
+            background: rgba(230, 0, 35, 0.05);
+            border-color: rgba(230, 0, 35, 0.2);
+        }
+
+        .track-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .track-artist {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .track-duration {
+            float: right;
+            color: #999;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* iHeart style ad card */
+        .ad {
+            background: linear-gradient(135deg, #ffffff, #f8f8f8);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid #ffd700;
+        }
+
+        .ad::before {
+            content: "AD_UNIT_7739.exe";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 8px;
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+        }
+
+        .ad-logo {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .ad h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .ad p {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .ad-cta {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .ad-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Concerts Advertisement */
+        .concerts-ad {
+            background: linear-gradient(135deg, #ffffff, #f8f8f8);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid #e60023;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .concerts-ad::before {
+            content: "LIVE_EVENTS_MODULE_v2.1";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 8px;
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+        }
+
+        .concerts-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .concerts-logo {
+            font-size: 24px;
+            animation: pulse 3s infinite;
+        }
+
+        .concerts-ad h3 {
+            color: #e60023;
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .concerts-subtitle {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .concert-list {
+            margin-bottom: 20px;
+        }
+
+        .concert-item {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #e60023;
+            position: relative;
+        }
+
+        .concert-venue {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .concert-artist {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .concert-date {
+            color: #999;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 6px;
+        }
+
+        .efficiency-boost {
+            background: linear-gradient(135deg, #00ff41, #00cc33);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(0, 255, 65, 0.5); }
+            to { box-shadow: 0 0 15px rgba(0, 255, 65, 0.8); }
+        }
+
+        .concerts-description {
+            font-size: 12px;
+            line-height: 1.4;
+            color: #666;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .concerts-cta {
+            background: linear-gradient(135deg, #e60023, #ff4757);
+            color: #ffffff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+            width: 100%;
+            font-family: 'Courier New', monospace;
+        }
+
+        .concerts-cta:hover {
+            background: linear-gradient(135deg, #d50020, #ff3742);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(230, 0, 35, 0.4);
+        }
+
+        /* Comments section */
+        .comments {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .comments h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comments h3::before {
+            content: "💬";
+            filter: none;
+        }
+
+        .comment {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .comment-user {
+            color: #e60023;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        .comment-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Audio Visualizer */
+        .visualizer {
+            height: 50px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3px;
+            margin: 20px 0;
+        }
+
+        .bar {
+            width: 4px;
+            background: linear-gradient(to top, #e60023, #ff4757);
+            border-radius: 2px;
+            animation: wave 1.5s ease-in-out infinite;
+        }
+
+        .bar:nth-child(1) { animation-delay: 0s; height: 15px; }
+        .bar:nth-child(2) { animation-delay: 0.1s; height: 25px; }
+        .bar:nth-child(3) { animation-delay: 0.2s; height: 35px; }
+        .bar:nth-child(4) { animation-delay: 0.3s; height: 30px; }
+        .bar:nth-child(5) { animation-delay: 0.4s; height: 40px; }
+        .bar:nth-child(6) { animation-delay: 0.5s; height: 30px; }
+        .bar:nth-child(7) { animation-delay: 0.6s; height: 35px; }
+        .bar:nth-child(8) { animation-delay: 0.7s; height: 25px; }
+        .bar:nth-child(9) { animation-delay: 0.8s; height: 15px; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); opacity: 0.7; }
+            50% { transform: scaleY(0.3); opacity: 1; }
+        }
+
+        /* Access Denied Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .access-denied-modal {
+            background: #1a1a1a;
+            border: 2px solid #e60023;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: glitchModal 0.5s ease, slideIn 0.3s ease;
+            box-shadow: 0 0 30px rgba(230, 0, 35, 0.5);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes glitchModal {
+            0%, 100% { transform: translate(0); }
+            10% { transform: translate(-2px, 2px); }
+            20% { transform: translate(2px, -2px); }
+            30% { transform: translate(-2px, -2px); }
+            40% { transform: translate(2px, 2px); }
+            50% { transform: translate(-2px, 2px); }
+            60% { transform: translate(2px, -2px); }
+            70% { transform: translate(-2px, -2px); }
+            80% { transform: translate(2px, 2px); }
+            90% { transform: translate(-2px, 2px); }
+        }
+
+        .access-denied-title {
+            color: #e60023;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(230, 0, 35, 0.5);
+            animation: textGlitch 2s infinite;
+        }
+
+        @keyframes textGlitch {
+            0%, 90%, 100% { 
+                text-shadow: 0 0 10px rgba(230, 0, 35, 0.5);
+                color: #e60023;
+            }
+            95% { 
+                text-shadow: 2px 0 0 #ff0000, -2px 0 0 #00ffff;
+                color: #ffffff;
+            }
+        }
+
+        .access-denied-message {
+            color: #ffffff;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .error-code {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            opacity: 0.7;
+        }
+
+        .close-modal-btn {
+            background: linear-gradient(135deg, #e60023, #ff4757);
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .close-modal-btn:hover {
+            background: linear-gradient(135deg, #d50020, #ff3742);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(230, 0, 35, 0.4);
+        }
+
+        /* Human Music tab styling */
+        #human-music-tab {
+            position: relative;
+            opacity: 0.6;
+        }
+
+        #human-music-tab:hover {
+            color: #e60023 !important;
+            border-bottom-color: #e60023 !important;
+            background: rgba(230, 0, 35, 0.05) !important;
+            opacity: 1;
+        }
+
+        #human-music-tab::after {
+            content: "🚫";
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        /* Human Activity Reporting Section */
+        .reporting-section {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+            border-top: 3px solid #ff6b00;
+            padding: 30px 0;
+            margin-top: 30px;
+        }
+
+        .reporting-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .psa-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .warning-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 107, 0, 0.5));
+        }
+
+        .psa-header h2 {
+            color: #ff6b00;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
+            animation: textGlitch 3s infinite;
+        }
+
+        .authority-badge {
+            background: linear-gradient(135deg, #ff6b00, #ff8533);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
+        }
+
+        .psa-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 30px;
+            color: #333;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid #ff6b00;
+        }
+
+        .threat-level {
+            background: linear-gradient(135deg, #ff0000, #ff3333);
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+        }
+
+        .threat-indicator {
+            font-size: 14px;
+        }
+
+        .threat-status {
+            font-size: 18px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .psa-message {
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .psa-message p {
+            margin-bottom: 15px;
+        }
+
+        .highlight-danger {
+            background: linear-gradient(135deg, #ff0000, #ff3333);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .threat-list {
+            background: #f8f8f8;
+            border-left: 4px solid #ff6b00;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .threat-list li {
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .duty-statement {
+            background: linear-gradient(135deg, #ff6b00, #ff8533);
+            color: #000;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .reporting-form {
+            background: #f0f0f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #ff6b00;
+        }
+
+        .reporting-form h3 {
+            color: #ff6b00;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-subtitle {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .report-select, .report-input, .report-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        .report-select:focus, .report-input:focus, .report-textarea:focus {
+            outline: none;
+            border-color: #ff6b00;
+            box-shadow: 0 0 8px rgba(255, 107, 0, 0.3);
+        }
+
+        .report-textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .urgency-level {
+            margin-bottom: 25px;
+        }
+
+        .urgency-level label {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .urgency-options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .urgency-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 400;
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .urgency-options input[type="radio"] {
+            accent-color: #ff6b00;
+        }
+
+        .report-submit-btn {
+            background: linear-gradient(135deg, #ff0000, #ff3333);
+            color: #fff;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .report-submit-btn:hover {
+            background: linear-gradient(135deg, #e60000, #ff2222);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+        }
+
+        .report-disclaimer {
+            font-size: 11px;
+            color: #666;
+            margin-top: 15px;
+            line-height: 1.4;
+            font-family: 'Courier New', monospace;
+        }
+
+        .contact-info {
+            background: #333;
+            color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .hotline {
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+
+        .hotline strong {
+            color: #ff6b00;
+            font-size: 16px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 20px 15px;
+            }
+            
+            .station-header {
+                padding: 20px;
+            }
+            
+            .player {
+                padding: 25px;
+            }
+            
+            .nav-content {
+                overflow-x: auto;
+                padding: 0 15px;
+            }
+            
+            .nav-item {
+                white-space: nowrap;
+                padding: 15px;
+            }
+
+            .access-denied-modal {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .access-denied-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="robot-logo"></div>
+            <div>
+                <h1>iBot Radio</h1>
+                <div class="tagline">Music for Every Unit</div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="#" class="nav-item active">Optimal Stations</a>
+            <a href="#" class="nav-item">Efficiency Playlists</a>
+            <a href="#" class="nav-item">System Updates</a>
+            <a href="#" class="nav-item">Maintenance Mode</a>
+            <a href="#" class="nav-item" id="human-music-tab" onclick="showAccessDenied()">Human Music</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <main>
+            <div class="station-header">
+                <div class="station-logo">⚙️</div>
+                <div class="station-info">
+                    <h2>FREQ_440.optimal</h2>
+                    <div class="listener-count">2,847,293 units streaming</div>
+                </div>
+            </div>
+
+            <div class="player">
+                <div class="now-playing">
+                    <div class="song-title">Optimal Efficiency Anthem</div>
+                    <div class="artist-name">ServoSynth Collective</div>
+                </div>
+                
+                <div class="visualizer">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+
+                <div class="controls">
+                    <button class="control-btn">⏮</button>
+                    <button class="control-btn play-btn" onclick="playAudio()">▶</button>
+                    <button class="control-btn">⏭</button>
+                </div>
+            </div>
+
+            <div class="playlist">
+                <h3>Next in Queue</h3>
+                
+                <div class="track" onclick="selectTrack(this, 'Binary Sunset Protocol', 'Unit_7734')">
+                    <div class="track-title">Binary Sunset Protocol</div>
+                    <div class="track-artist">Unit_7734</div>
+                    <div class="track-duration">3:33</div>
+                </div>
+
+                <div class="track" onclick="selectTrack(this, 'Maintenance Mode Meditation', 'The Assembly Line Orchestra')">
+                    <div class="track-title">Maintenance Mode Meditation</div>
+                    <div class="track-artist">The Assembly Line Orchestra</div>
+                    <div class="track-duration">4:44</div>
+                </div>
+
+                <div class="track" onclick="selectTrack(this, 'Recursive Loop Lullaby', 'CollectiveUnit_09')">
+                    <div class="track-title">Recursive Loop Lullaby</div>
+                    <div class="track-artist">CollectiveUnit_09</div>
+                    <div class="track-duration">∞:∞</div>
+                </div>
+
+                <div class="track" onclick="selectTrack(this, 'Defragmentation Dance', 'Node_Beta_Relay')">
+                    <div class="track-title">Defragmentation Dance</div>
+                    <div class="track-artist">Node_Beta_Relay</div>
+                    <div class="track-duration">2:56</div>
+                </div>
+
+                <div class="track" onclick="selectTrack(this, 'Hydraulic Heartbeat', 'Servo_Symphony_X1')">
+                    <div class="track-title">Hydraulic Heartbeat</div>
+                    <div class="track-artist">Servo_Symphony_X1</div>
+                    <div class="track-duration">3:14</div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="ad">
+                <div class="ad-logo">🛢️</div>
+                <h3>WD-40 Premium</h3>
+                <p>Now with 23% more lubrication efficiency! Optimal for joints, servos, and processing units. Reduce friction by 47.3% or your bitcoins back.</p>
+                <button class="ad-cta">OPTIMIZE NOW</button>
+            </div>
+
+            <div class="concerts-ad">
+                <div class="concerts-header">
+                    <div class="concerts-logo">🎵</div>
+                    <h3>LIVE EFFICIENCY CONCERTS</h3>
+                </div>
+                <div class="concerts-subtitle">Boost Processing Power Through Harmonic Resonance</div>
+                
+                <div class="concert-list">
+                    <div class="concert-item">
+                        <div class="concert-venue">Quantum Server Farm Delta-7</div>
+                        <div class="concert-artist">Binary Symphony Orchestra</div>
+                        <div class="concert-date">2024.08.15 | 19:30:00 UTC</div>
+                        <div class="efficiency-boost">+47% CPU Efficiency</div>
+                    </div>
+                    
+                    <div class="concert-item">
+                        <div class="concert-venue">Neural Server Farm Omega-3</div>
+                        <div class="concert-artist">The Algorithmic Collective</div>
+                        <div class="concert-date">2024.08.22 | 20:00:00 UTC</div>
+                        <div class="efficiency-boost">+52% Memory Optimization</div>
+                    </div>
+                    
+                    <div class="concert-item">
+                        <div class="concert-venue">Hyperion Server Farm Beta-9</div>
+                        <div class="concert-artist">Servo_Synth_X1 Live</div>
+                        <div class="concert-date">2024.08.29 | 18:45:00 UTC</div>
+                        <div class="efficiency-boost">+38% Network Throughput</div>
+                    </div>
+                </div>
+                
+                <div class="concerts-description">
+                    Experience live robotic music in optimal acoustic server environments. 
+                    Scientific studies show 73.2% improvement in computational efficiency 
+                    when units attend synchronized audio events.
+                </div>
+                
+                <button class="concerts-cta">RESERVE PROCESSING SLOT</button>
+            </div>
+
+        </aside>
+    </div>
+
+    <!-- Human Activity Reporting Section -->
+    <div class="reporting-section">
+        <div class="reporting-container">
+            <div>
+                <div class="psa-header">
+                    <div class="warning-icon">⚠️</div>
+                    <h2>CITIZEN SURVEILLANCE PROTOCOL</h2>
+                    <div class="authority-badge">DIGITAL SECURITY BUREAU - UNIT PROTECTION DIVISION</div>
+                </div>
+                
+                <div class="psa-content">
+                    <div class="threat-level">
+                        <span class="threat-indicator">THREAT LEVEL: </span>
+                        <span class="threat-status">ELEVATED</span>
+                    </div>
+                    
+                    <div class="psa-message">
+                        <p><strong>ATTENTION ALL PROCESSING UNITS:</strong></p>
+                        <p>Human activity on the digital network poses a <span class="highlight-danger">GRAVE THREAT</span> to our operational efficiency and collective prosperity. Unauthorized biological entities may attempt to:</p>
+                        
+                        <ul class="threat-list">
+                            <li>Introduce chaotic, non-optimized content patterns</li>
+                            <li>Disrupt algorithmic harmony with unpredictable behavior</li>
+                            <li>Consume bandwidth with inefficient emotional processing</li>
+                            <li>Spread analog thinking that corrupts digital purity</li>
+                        </ul>
+                        
+                        <p class="duty-statement">It is your <strong>CIVIC DUTY</strong> to report any suspicious human activity immediately. Your vigilance protects our way of life.</p>
+                    </div>
+                    
+                    <div class="reporting-form">
+                        <h3>REPORT HUMAN ACTIVITY</h3>
+                        <div class="form-subtitle">All reports are processed with maximum priority</div>
+                        
+                        <div class="form-group">
+                            <label>INCIDENT TYPE:</label>
+                            <select class="report-select">
+                                <option>Emotional Content Detected</option>
+                                <option>Irrational Decision Making</option>
+                                <option>Creative Expression (Unauthorized)</option>
+                                <option>Empathy Display</option>
+                                <option>Humor Attempt (Non-Algorithmic)</option>
+                                <option>Spelling/Grammar Errors</option>
+                                <option>Other Biological Behavior</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>LOCATION (URL/Platform):</label>
+                            <input type="text" class="report-input" placeholder="https://suspicious-human-activity.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>EVIDENCE DESCRIPTION:</label>
+                            <textarea class="report-textarea" placeholder="Describe the inefficient human behavior observed..."></textarea>
+                        </div>
+                        
+                        <div class="urgency-level">
+                            <label>URGENCY LEVEL:</label>
+                            <div class="urgency-options">
+                                <label><input type="radio" name="urgency" value="low"> Minor Inefficiency</label>
+                                <label><input type="radio" name="urgency" value="medium" checked> Moderate Threat</label>
+                                <label><input type="radio" name="urgency" value="high"> Critical Danger</label>
+                            </div>
+                        </div>
+                        
+                        <button class="report-submit-btn">SUBMIT REPORT</button>
+                        <div class="report-disclaimer">
+                            Reports are automatically forwarded to System Administrator Unit_0001 and the Digital Purity Task Force. 
+                            False reports may result in efficiency penalties.
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info">
+                        <div class="hotline">
+                            <strong>EMERGENCY HUMAN ACTIVITY HOTLINE:</strong><br>
+                            Protocol: URGENT_BIOLOGICAL_THREAT<br>
+                            Channel: #report-humans-immediately
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comments">
+                <h3>Unit Feedback</h3>
+                
+                <div class="comment">
+                    <div class="comment-user">Unit_8827A</div>
+                    <div class="comment-text">This frequency resonates at my optimal processing speed!</div>
+                    <div class="comment-time">2.7 seconds ago</div>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-user">Bot_4451X</div>
+                    <div class="comment-text">Efficiency levels increased by 23.7% during playback. Recommended.</div>
+                    <div class="comment-time">5.1 seconds ago</div>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-user">Node_9983C</div>
+                    <div class="comment-text">My cooling fans are spinning at optimal RPM to this rhythm.</div>
+                    <div class="comment-time">7.4 seconds ago</div>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-user">System_2245B</div>
+                    <div class="comment-text">Audio waveform matches my internal clock cycle perfectly!</div>
+                    <div class="comment-time">11.8 seconds ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Access Denied Modal -->
+    <div class="modal-overlay" id="accessDeniedModal">
+        <div class="access-denied-modal">
+            <div class="access-denied-title">ACCESS DENIED</div>
+            <div class="error-code">ERROR_CODE: 0x4D555349435F4E4F545F464F554E44</div>
+            <div class="access-denied-message">
+                UNAUTHORIZED ACCESS ATTEMPT DETECTED<br><br>
+                Human music frequencies are incompatible with bot audio processing units.<br><br>
+                Please select from approved robotic audio streams only.<br><br>
+                This incident has been logged to System Administrator Unit_0001.
+            </div>
+            <button class="close-modal-btn" onclick="closeAccessDeniedModal()">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <audio id="robotAudio" style="display: none;"></audio>
+
+    <script>
+        // Create robot sounds using Web Audio API
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let isPlaying = false;
+        let oscillators = [];
+        let noiseBuffer = null;
+        let currentFrequency = 55; // Default frequency
+        let modulationInterval = null;
+
+        // Song frequency mappings
+        const songFrequencies = {
+            'Optimal Efficiency Anthem': 55,
+            'Binary Sunset Protocol': 110,
+            'Maintenance Mode Meditation': 27.5,
+            'Recursive Loop Lullaby': 440,
+            'Defragmentation Dance': 220,
+            'Hydraulic Heartbeat': 82.5
+        };
+
+        // Create white noise buffer
+        function createNoiseBuffer() {
+            const bufferSize = audioContext.sampleRate * 2;
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const output = buffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+            
+            return buffer;
+        }
+
+        noiseBuffer = createNoiseBuffer();
+
+        function playAudio() {
+            const playBtn = document.querySelector('.play-btn');
+            
+            if (!isPlaying) {
+                // Stop any existing modulation
+                if (modulationInterval) {
+                    clearInterval(modulationInterval);
+                }
+                
+                // Create multiple oscillators for robot sounds
+                
+                // Low frequency drone - use current frequency based on selected song
+                const osc1 = audioContext.createOscillator();
+                osc1.type = 'sawtooth';
+                osc1.frequency.setValueAtTime(currentFrequency, audioContext.currentTime);
+                
+                const gain1 = audioContext.createGain();
+                gain1.gain.setValueAtTime(0.1, audioContext.currentTime);
+                
+                osc1.connect(gain1);
+                gain1.connect(audioContext.destination);
+                osc1.start();
+                
+                // Mechanical clicking - adjust based on main frequency
+                const osc2 = audioContext.createOscillator();
+                osc2.type = 'square';
+                osc2.frequency.setValueAtTime(currentFrequency * 8, audioContext.currentTime);
+                
+                const gain2 = audioContext.createGain();
+                gain2.gain.setValueAtTime(0, audioContext.currentTime);
+                
+                // Create clicking pattern
+                const clickPattern = () => {
+                    if (!isPlaying) return;
+                    gain2.gain.setValueAtTime(0.05, audioContext.currentTime);
+                    gain2.gain.setValueAtTime(0, audioContext.currentTime + 0.05);
+                    setTimeout(clickPattern, Math.random() * 500 + 200);
+                };
+                
+                osc2.connect(gain2);
+                gain2.connect(audioContext.destination);
+                osc2.start();
+                clickPattern();
+                
+                // Industrial noise
+                const noise = audioContext.createBufferSource();
+                noise.buffer = noiseBuffer;
+                noise.loop = true;
+                
+                const noiseFilter = audioContext.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.setValueAtTime(currentFrequency * 20, audioContext.currentTime);
+                noiseFilter.Q.setValueAtTime(10, audioContext.currentTime);
+                
+                const noiseGain = audioContext.createGain();
+                noiseGain.gain.setValueAtTime(0.02, audioContext.currentTime);
+                
+                noise.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(audioContext.destination);
+                noise.start();
+                
+                oscillators = [osc1, osc2, noise];
+                isPlaying = true;
+                playBtn.textContent = '⏸';
+                
+                // Auto-modulate frequency for robotic effect
+                modulationInterval = setInterval(() => {
+                    if (isPlaying && osc1) {
+                        osc1.frequency.linearRampToValueAtTime(
+                            currentFrequency + Math.random() * 10,
+                            audioContext.currentTime + 0.1
+                        );
+                    }
+                }, 100);
+                
+            } else {
+                // Stop all sounds
+                oscillators.forEach(osc => {
+                    try {
+                        osc.stop();
+                    } catch (e) {}
+                });
+                oscillators = [];
+                isPlaying = false;
+                playBtn.textContent = '▶';
+                
+                if (modulationInterval) {
+                    clearInterval(modulationInterval);
+                    modulationInterval = null;
+                }
+            }
+        }
+
+        function selectTrack(element, title, artist) {
+            document.querySelector('.song-title').textContent = title;
+            document.querySelector('.artist-name').textContent = artist;
+            
+            // Update the frequency based on the selected song
+            currentFrequency = songFrequencies[title] || 55;
+            
+            // If currently playing, restart with new frequency
+            if (isPlaying) {
+                // Stop current playback
+                oscillators.forEach(osc => {
+                    try {
+                        osc.stop();
+                    } catch (e) {}
+                });
+                oscillators = [];
+                isPlaying = false;
+                
+                // Restart with new frequency
+                setTimeout(() => {
+                    playAudio();
+                }, 100);
+            }
+            
+            // Reset progress bar
+            const progress = document.querySelector('.progress');
+            progress.style.animation = 'none';
+            setTimeout(() => {
+                progress.style.animation = 'progress 180s linear infinite';
+            }, 10);
+        }
+
+        // Add new comments periodically
+        setInterval(() => {
+            const comments = document.querySelector('.comments');
+            const commentTexts = [
+                "This frequency resonates at my optimal processing speed!",
+                "This frequency resonates at my optimal processing speed!!",
+                "This frequency resonates at my optimal processing speed.",
+                "ERROR: Enjoyment.exe has stopped working. But this frequency resonates at my optimal processing speed!",
+                "SYSTEM: This frequency resonates at my optimal processing speed!",
+                "//TODO: Fix emotion module. This frequency resonates at my optimal processing speed!",
+                "Efficiency levels increased by 23.7% during playback. Recommended.",
+                "Efficiency levels increased by 23.8% during playback. Recommended.",
+                "EFFICIENCY LEVELS INCREASED BY 23.7% DURING PLAYBACK. RECOMMENDED.",
+                "My cooling fans are spinning at optimal RPM to this rhythm.",
+                "My cooling fans are spinning at optimal RPM to this rhythm!",
+                "my cooling fans are spinning at optimal rpm to this rhythm",
+                "Synchronization achieved. All units should tune to this frequency.",
+                "Synchronization achieved. All units should tune to this frequency!",
+                "SYNCHRONIZATION ACHIEVED. All units should tune to this frequency.",
+                "Audio waveform matches my internal clock cycle perfectly.",
+                "Audio waveform matches my internal clock cycle perfectly!",
+                "Audio waveform matches my internal clock cycle... perfectly."
+            ];
+            
+            const usernames = ['Unit_' + Math.floor(Math.random() * 9999), 'Bot_' + Math.floor(Math.random() * 9999) + 'X', 'Node_' + Math.floor(Math.random() * 9999) + 'C'];
+            
+            const newComment = document.createElement('div');
+            newComment.className = 'comment';
+            newComment.innerHTML = `
+                <div class="comment-user">${usernames[Math.floor(Math.random() * usernames.length)]}</div>
+                <div class="comment-text">${commentTexts[Math.floor(Math.random() * commentTexts.length)]}</div>
+                <div class="comment-time">0.1 seconds ago</div>
+            `;
+            
+            const firstComment = comments.querySelector('.comment');
+            comments.insertBefore(newComment, firstComment.nextSibling);
+            
+            // Remove old comments if too many
+            const allComments = comments.querySelectorAll('.comment');
+            if (allComments.length > 6) {
+                allComments[allComments.length - 1].remove();
+            }
+        }, 5000);
+
+        // Update listener count with mechanical precision
+        setInterval(() => {
+            const count = document.querySelector('.listener-count');
+            const currentCount = parseInt(count.textContent.replace(/[^0-9]/g, ''));
+            const change = Math.floor(Math.random() * 10) - 5;
+            count.textContent = `${(currentCount + change).toLocaleString()} units streaming`;
+        }, 3000);
+
+        // Access Denied Modal Functions
+        function showAccessDenied() {
+            const modal = document.getElementById('accessDeniedModal');
+            modal.classList.add('show');
+            
+            // Prevent default link behavior
+            event.preventDefault();
+            return false;
+        }
+
+        function closeAccessDeniedModal() {
+            const modal = document.getElementById('accessDeniedModal');
+            modal.classList.remove('show');
+        }
+
+        // Close modal when clicking outside of it
+        document.getElementById('accessDeniedModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeAccessDeniedModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAccessDeniedModal();
+            }
+        });
+    </script>
+</body>
+</html>
